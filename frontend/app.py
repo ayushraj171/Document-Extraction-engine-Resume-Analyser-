@@ -10,13 +10,10 @@ st.set_page_config(
 st.title("📄 AI Resume Analyzer")
 st.write("Upload your resume & analyze it using Gemini AI.")
 
-uploaded_file = st.file_uploader(
-    "Upload Resume PDF",
-    type=["pdf"]
-)
+uploaded_file = st.file_uploader("Upload Resume PDF", type=["pdf"])
 
-# ⚠️ CHANGE THIS when deploying backend
-API_URL = "http://127.0.0.1:8000/upload"
+# 🔴 ONLY CHANGE THIS LINE (MOST IMPORTANT)
+API_URL = "https://YOUR-BACKEND-URL/upload"
 
 if uploaded_file is not None:
 
@@ -41,7 +38,6 @@ if uploaded_file is not None:
 
                     data = response.json().get("extracted_data", {})
 
-                    st.divider()
                     st.header("👤 Candidate Information")
 
                     st.subheader("Name")
@@ -54,49 +50,16 @@ if uploaded_file is not None:
                     st.info(data.get("phone", "Not Found"))
 
                     st.subheader("📊 ATS Score")
-                    st.metric("ATS Resume Score", f"{data.get('ats_score', 0)}/100")
+                    st.metric("ATS Score", f"{data.get('ats_score', 0)}/100")
 
                     st.subheader("📝 Resume Summary")
-                    st.write(data.get("summary", "No summary available"))
+                    st.write(data.get("summary", "No summary"))
 
-                    # ---------------- SKILLS ----------------
                     st.subheader("🛠 Skills")
-                    skills = data.get("skills", [])
-                    if isinstance(skills, list):
-                        st.write(", ".join(skills))
-                    else:
-                        st.write(skills)
+                    st.write(", ".join(data.get("skills", [])))
 
-                    # ---------------- MISSING SKILLS ----------------
                     st.subheader("❌ Missing Skills")
                     st.write(", ".join(data.get("missing_skills", [])))
-
-                    # ---------------- EDUCATION ----------------
-                    st.subheader("🎓 Education")
-                    for edu in data.get("education", []):
-                        st.markdown(f"""
-- **{edu.get('degree')}**
-  - {edu.get('institution')}
-  - {edu.get('years')}
-  - {edu.get('details')}
-""")
-
-                    # ---------------- EXPERIENCE ----------------
-                    st.subheader("💼 Experience")
-                    for exp in data.get("experience", []):
-                        st.markdown(f"""
-- **{exp.get('title')}** at **{exp.get('organization')}**
-  - {exp.get('dates')}
-  - {exp.get('description')}
-""")
-
-                    # ---------------- PROJECTS ----------------
-                    st.subheader("🚀 Projects")
-                    for proj in data.get("projects", []):
-                        st.markdown(f"""
-- **{proj.get('title')}**
-  - {proj.get('description')}
-""")
 
                 else:
                     st.error(f"Backend Error: {response.status_code}")
