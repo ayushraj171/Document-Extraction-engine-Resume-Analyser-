@@ -46,10 +46,9 @@ Resume:
         match = re.search(r'\{.*\}', cleaned, re.DOTALL)
 
         if not match:
-            return {"error": "No JSON found", "raw": cleaned}
+            return {"error": "No JSON found", "raw_response": cleaned}
 
         return json.loads(match.group())
 
     except Exception as e:
         return {"error": str(e)}
-        }
