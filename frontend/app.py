@@ -13,7 +13,7 @@ st.write("Upload your resume & analyze it using Gemini AI.")
 uploaded_file = st.file_uploader("Upload Resume PDF", type=["pdf"])
 
 # 🔥 CHANGE ONLY THIS LINE AFTER DEPLOYMENT
-API_URL = "https://YOUR-BACKEND-URL/upload"
+API_URL = "https://YOUR-ACTUAL-BACKEND.onrender.com/upload"
 
 if uploaded_file is not None:
 
