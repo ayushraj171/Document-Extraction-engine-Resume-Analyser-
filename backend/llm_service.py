@@ -1,11 +1,22 @@
 import os
 import json
 import re
+
+from dotenv import load_dotenv
 import google.generativeai as genai
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Load environment variables
+load_dotenv()
 
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Configure Gemini
+genai.configure(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+
+# Gemini model
+model = genai.GenerativeModel(
+    "gemini-2.5-flash"
+)
 
 
 def extract_structured_data(text):
@@ -13,6 +24,7 @@ def extract_structured_data(text):
     prompt = f"""
 Extract resume data and return ONLY valid JSON.
 
+Format:
 {{
     "name": "",
     "email": "",
@@ -21,34 +33,63 @@ Extract resume data and return ONLY valid JSON.
     "education": [],
     "projects": [],
     "experience": [],
-    "ats_score": 85,
+    "ats_score": "85",
     "summary": "",
     "missing_skills": []
 }}
 
-Rules:
+Instructions:
+- ats_score MUST be a number between 1 and 100
 - Return ONLY JSON
 - No markdown
-- ats_score must be 1–100
+- missing_skills should contain important missing industry skills
 
 Resume:
 {text}
 """
 
     try:
+
         response = model.generate_content(prompt)
 
-        if not response or not response.text:
-            return {"error": "Empty response from Gemini"}
+        raw_text = response.text
 
-        cleaned = response.text.replace("```json", "").replace("```", "").strip()
+        # Remove markdown formatting
+        cleaned = raw_text.replace(
+            "```json",
+            ""
+        ).replace(
+            "```",
+            ""
+        ).strip()
 
-        match = re.search(r'\{.*\}', cleaned, re.DOTALL)
+        # Extract JSON
+        match = re.search(
+            r'\{.*\}',
+            cleaned,
+            re.DOTALL
+        )
 
-        if not match:
-            return {"error": "No JSON found", "raw_response": cleaned}
+        if match:
 
-        return json.loads(match.group())
+            json_text = match.group()
+
+            data = json.loads(json_text)
+
+            return data
+
+        else:
+
+            return {
+                "error": "No JSON found",
+                "raw_response": cleaned
+            }
+
+    except Exception as e:
+
+        return {
+            "error": str(e)
+        }
 
     except Exception as e:
         return {"error": str(e)}
