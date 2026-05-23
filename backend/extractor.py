@@ -2,12 +2,17 @@ import fitz
 
 
 def extract_text(pdf_path):
+    try:
+        doc = fitz.open(pdf_path)
+        text = ""
 
-    text = ""
+        for page in doc:
+            t = page.get_text()
+            if t:
+                text += t
 
-    doc = fitz.open(pdf_path)
+        doc.close()
+        return text
 
-    for page in doc:
-        text += page.get_text()
-
-    return text
+    except Exception as e:
+        return f"ERROR: {str(e)}"
