@@ -12,8 +12,8 @@ st.write("Upload your resume & analyze it using Gemini AI.")
 
 uploaded_file = st.file_uploader("Upload Resume PDF", type=["pdf"])
 
-# 🔴 ONLY CHANGE THIS LINE (MOST IMPORTANT)
-API_URL = "https://YOUR-BACKEND-URL/upload"
+# 🔴 FIX THIS LINE (MOST IMPORTANT)
+API_URL = "https://YOUR-ACTUAL-BACKEND-URL/upload"
 
 if uploaded_file is not None:
 
@@ -39,21 +39,14 @@ if uploaded_file is not None:
                     data = response.json().get("extracted_data", {})
 
                     st.header("👤 Candidate Information")
-
-                    st.subheader("Name")
                     st.success(data.get("name", "Not Found"))
-
-                    st.subheader("Email")
                     st.info(data.get("email", "Not Found"))
-
-                    st.subheader("Phone")
                     st.info(data.get("phone", "Not Found"))
 
-                    st.subheader("📊 ATS Score")
                     st.metric("ATS Score", f"{data.get('ats_score', 0)}/100")
 
-                    st.subheader("📝 Resume Summary")
-                    st.write(data.get("summary", "No summary"))
+                    st.subheader("📝 Summary")
+                    st.write(data.get("summary", ""))
 
                     st.subheader("🛠 Skills")
                     st.write(", ".join(data.get("skills", [])))
